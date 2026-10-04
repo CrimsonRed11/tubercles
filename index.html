@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#07111f">
-  <title>Silver Racing | 3D Model</title>
+  <title>Silver Racing Tubercles</title>
 
   <style>
     html, body {
@@ -131,7 +131,7 @@
       controls.update();
     }
 
-    // Load STL
+
     const loader = new STLLoader();
 
     loader.load(
@@ -163,7 +163,7 @@
       }
     );
 
-    // Responsive renderer
+
     function resize() {
       const width = viewer.clientWidth;
       const height = viewer.clientHeight;
@@ -177,7 +177,7 @@
     window.addEventListener('resize', resize);
     resize();
 
-    // Render
+
     function animate() {
       requestAnimationFrame(animate);
 
