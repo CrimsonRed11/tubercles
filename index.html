@@ -4,261 +4,188 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#07111f">
-  <title>Silver Racing | 3D Component</title>
+  <title>Silver Racing | 3D Model</title>
+
   <style>
-    :root {
-      --bg: #07111f;
-      --panel: rgba(12, 27, 45, .82);
-      --line: rgba(255,255,255,.13);
-      --text: #f5f8fc;
-      --muted: #9eafc2;
-      --accent: #d9e4ef;
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #07111f;
     }
-    * { box-sizing: border-box; }
-    html, body { margin:0; height:100%; background:var(--bg); color:var(--text);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-    body { overflow:hidden; }
-    #app { height:100dvh; display:flex; flex-direction:column; }
-    header {
-      height:76px; flex:0 0 76px; display:flex; align-items:center; justify-content:space-between;
-      padding:0 20px; border-bottom:1px solid var(--line); background:rgba(7,17,31,.92);
-      backdrop-filter:blur(16px); z-index:5;
+
+    #viewer {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
     }
-    .brand { display:flex; align-items:center; gap:12px; }
-    .mark { width:38px; height:38px; border:1px solid rgba(255,255,255,.35); transform:rotate(30deg);
-      display:grid; place-items:center; border-radius:7px; }
-    .mark span { transform:rotate(-30deg); font-weight:800; font-size:12px; letter-spacing:-.5px; }
-    .brand strong { display:block; font-size:14px; letter-spacing:.14em; }
-    .brand small { color:var(--muted); font-size:10px; letter-spacing:.12em; }
-    .badge { border:1px solid var(--line); padding:8px 11px; border-radius:999px; color:var(--muted); font-size:11px; }
-    main { position:relative; flex:1; min-height:0; }
-    #viewer { position:absolute; inset:0; }
-    canvas { display:block; width:100%; height:100%; touch-action:none; }
-    .hint {
-      position:absolute; left:50%; bottom:24px; transform:translateX(-50%);
-      padding:10px 15px; border:1px solid var(--line); border-radius:999px;
-      background:rgba(7,17,31,.76); backdrop-filter:blur(14px); color:#dbe5ef;
-      font-size:12px; white-space:nowrap; pointer-events:none;
-    }
-    .panel {
-      position:absolute; left:18px; top:18px; max-width:330px; padding:18px;
-      border:1px solid var(--line); border-radius:18px; background:var(--panel);
-      backdrop-filter:blur(18px); box-shadow:0 16px 50px rgba(0,0,0,.25);
-    }
-    .eyebrow { color:#aebdcb; font-size:10px; letter-spacing:.18em; text-transform:uppercase; }
-    h1 { margin:6px 0 7px; font-size:22px; line-height:1.1; }
-    p { margin:0; color:var(--muted); font-size:13px; line-height:1.5; }
-    .controls {
-      position:absolute; right:18px; bottom:18px; display:flex; gap:8px; z-index:3;
-    }
-    button {
-      border:1px solid var(--line); color:var(--text); background:rgba(7,17,31,.82);
-      backdrop-filter:blur(14px); border-radius:12px; padding:10px 12px; cursor:pointer;
-      font:inherit; font-size:12px;
-    }
-    button:active { transform:translateY(1px); }
-    .loading {
-      position:absolute; inset:0; display:grid; place-items:center; background:var(--bg);
-      z-index:10; transition:opacity .35s ease;
-    }
-    .loading.hidden { opacity:0; pointer-events:none; }
-    .loader { text-align:center; }
-    .spinner { width:28px; height:28px; margin:0 auto 12px; border:2px solid rgba(255,255,255,.18);
-      border-top-color:#fff; border-radius:50%; animation:spin .8s linear infinite; }
-    @keyframes spin { to { transform:rotate(360deg); } }
-    .error { max-width:520px; padding:25px; text-align:center; }
-    .error h2 { margin:0 0 8px; }
-    .error p { margin-bottom:16px; }
-    @media (max-width:600px) {
-      header { height:66px; flex-basis:66px; padding:0 14px; }
-      .mark { width:32px; height:32px; }
-      .brand strong { font-size:12px; }
-      .brand small { display:none; }
-      .badge { font-size:10px; padding:7px 9px; }
-      .panel { left:12px; top:12px; right:12px; max-width:none; padding:14px; }
-      h1 { font-size:19px; }
-      .hint { bottom:76px; font-size:11px; }
-      .controls { left:12px; right:12px; bottom:12px; }
-      button { flex:1; }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
     }
   </style>
 </head>
+
 <body>
-<div id="app">
-  <header>
-    <div class="brand">
-      <div class="mark"><span>SR</span></div>
-      <div><strong>SILVER RACING</strong><small>STEM RACING · WALES</small></div>
-    </div>
-    <div class="badge">3D COMPONENT</div>
-  </header>
+  <div id="viewer"></div>
 
-  <main>
-    <div id="viewer"></div>
-
-    <section class="panel">
-      <div class="eyebrow">Engineering Showcase</div>
-      <h1>Front Wheel Support</h1>
-      <p>Explore our 3D-engineered component. Drag to rotate, pinch or scroll to zoom, and use two fingers to pan.</p>
-    </section>
-
-    <div class="hint">↔ Drag to rotate · Pinch / scroll to zoom</div>
-
-    <div class="controls">
-      <button id="reset">Reset view</button>
-      <button id="fullscreen">Full screen</button>
-    </div>
-
-    <div class="loading" id="loading">
-      <div class="loader">
-        <div class="spinner"></div>
-        <div>Loading 3D model…</div>
-      </div>
-    </div>
-  </main>
-</div>
-
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+    }
   }
-}
-</script>
-<script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { STLLoader } from 'three/addons/loaders/STLLoader.js';
+  </script>
 
-const viewer = document.getElementById('viewer');
-const loading = document.getElementById('loading');
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { STLLoader } from 'three/addons/loaders/STLLoader.js';
 
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x07111f);
+    const viewer = document.getElementById('viewer');
 
-const camera = new THREE.PerspectiveCamera(42, 1, 0.01, 10000);
-camera.position.set(2, 2, 3);
+    // Scene
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x07111f);
 
-const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:false });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.15;
-viewer.appendChild(renderer.domElement);
+    // Camera
+    const camera = new THREE.PerspectiveCamera(42, 1, 0.001, 10000);
+    camera.position.set(2, 2, 3);
 
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.065;
-controls.minDistance = 0.2;
-controls.maxDistance = 1000;
-
-scene.add(new THREE.HemisphereLight(0xeaf4ff, 0x162336, 2.2));
-
-const key = new THREE.DirectionalLight(0xffffff, 3.2);
-key.position.set(4, 6, 5);
-scene.add(key);
-
-const fill = new THREE.DirectionalLight(0x9ec5ff, 1.7);
-fill.position.set(-5, 2, -4);
-scene.add(fill);
-
-const rim = new THREE.DirectionalLight(0xffffff, 2);
-rim.position.set(0, -3, 6);
-scene.add(rim);
-
-const grid = new THREE.GridHelper(10, 20, 0x29445d, 0x15283a);
-grid.material.transparent = true;
-grid.material.opacity = 0.25;
-grid.position.y = -0.001;
-scene.add(grid);
-
-let model = null;
-let defaultTarget = new THREE.Vector3();
-let defaultPosition = new THREE.Vector3();
-
-function frameObject(obj) {
-  const box = new THREE.Box3().setFromObject(obj);
-  const size = box.getSize(new THREE.Vector3());
-  const center = box.getCenter(new THREE.Vector3());
-  const maxDim = Math.max(size.x, size.y, size.z);
-  const distance = maxDim / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov * 0.5))) * 1.35;
-
-  camera.position.copy(center).add(new THREE.Vector3(distance, distance * 0.65, distance));
-  controls.target.copy(center);
-  defaultTarget.copy(center);
-  defaultPosition.copy(camera.position);
-  camera.near = Math.max(maxDim / 10000, 0.0001);
-  camera.far = Math.max(maxDim * 100, 100);
-  camera.updateProjectionMatrix();
-
-  const gridScale = Math.max(maxDim * 4, 1);
-  grid.scale.setScalar(gridScale / 10);
-  grid.position.y = box.min.y;
-}
-
-const loader = new STLLoader();
-loader.load(
-  'models/front-wheel-support.stl',
-  (geometry) => {
-    geometry.computeVertexNormals();
-    geometry.center();
-
-    const material = new THREE.MeshStandardMaterial({
-      color: 0xc9d1da,
-      metalness: 0.72,
-      roughness: 0.24
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: false
     });
 
-    model = new THREE.Mesh(geometry, material);
-    model.rotation.x = -Math.PI / 2;
-    scene.add(model);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.15;
 
-    frameObject(model);
-    loading.classList.add('hidden');
-  },
-  undefined,
-  (err) => {
-    console.error(err);
-    loading.innerHTML = `
-      <div class="error">
-        <h2>Model couldn't be loaded</h2>
-        <p>Check that <strong>models/front-wheel-support.stl</strong> is present in the GitHub repository.</p>
-      </div>`;
-  }
-);
+    viewer.appendChild(renderer.domElement);
 
-document.getElementById('reset').addEventListener('click', () => {
-  if (!model) return;
-  camera.position.copy(defaultPosition);
-  controls.target.copy(defaultTarget);
-  controls.update();
-});
+    // Touch / mouse interaction
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.065;
+    controls.enablePan = true;
+    controls.minDistance = 0.05;
+    controls.maxDistance = 1000;
 
-document.getElementById('fullscreen').addEventListener('click', async () => {
-  if (!document.fullscreenElement) {
-    await document.documentElement.requestFullscreen?.();
-  } else {
-    await document.exitFullscreen?.();
-  }
-});
+    // Lighting
+    scene.add(
+      new THREE.HemisphereLight(
+        0xeaf4ff,
+        0x162336,
+        2.2
+      )
+    );
 
-function resize() {
-  const w = viewer.clientWidth;
-  const h = viewer.clientHeight;
-  renderer.setSize(w, h, false);
-  camera.aspect = w / h;
-  camera.updateProjectionMatrix();
-}
-window.addEventListener('resize', resize);
-resize();
+    const keyLight = new THREE.DirectionalLight(0xffffff, 3.2);
+    keyLight.position.set(4, 6, 5);
+    scene.add(keyLight);
 
-function animate() {
-  requestAnimationFrame(animate);
-  controls.update();
-  renderer.render(scene, camera);
-}
-animate();
-</script>
+    const fillLight = new THREE.DirectionalLight(0x9ec5ff, 1.7);
+    fillLight.position.set(-5, 2, -4);
+    scene.add(fillLight);
+
+    const rimLight = new THREE.DirectionalLight(0xffffff, 2);
+    rimLight.position.set(0, -3, 6);
+    scene.add(rimLight);
+
+    let model = null;
+
+    function frameObject(object) {
+      const box = new THREE.Box3().setFromObject(object);
+      const size = box.getSize(new THREE.Vector3());
+      const center = box.getCenter(new THREE.Vector3());
+      const maxDim = Math.max(size.x, size.y, size.z);
+
+      const distance =
+        maxDim /
+        (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov * 0.5))) *
+        1.35;
+
+      camera.position.copy(
+        center.clone().add(
+          new THREE.Vector3(
+            distance,
+            distance * 0.65,
+            distance
+          )
+        )
+      );
+
+      controls.target.copy(center);
+
+      camera.near = Math.max(maxDim / 10000, 0.0001);
+      camera.far = Math.max(maxDim * 100, 100);
+      camera.updateProjectionMatrix();
+      controls.update();
+    }
+
+    // Load STL
+    const loader = new STLLoader();
+
+    loader.load(
+      'models/front-wheel-support.stl',
+
+      (geometry) => {
+        geometry.computeVertexNormals();
+        geometry.center();
+
+        const material = new THREE.MeshStandardMaterial({
+          color: 0xc9d1da,
+          metalness: 0.72,
+          roughness: 0.24
+        });
+
+        model = new THREE.Mesh(geometry, material);
+
+        model.rotation.x = -Math.PI / 2;
+
+        scene.add(model);
+
+        frameObject(model);
+      },
+
+      undefined,
+
+      (error) => {
+        console.error('Unable to load STL:', error);
+      }
+    );
+
+    // Responsive renderer
+    function resize() {
+      const width = viewer.clientWidth;
+      const height = viewer.clientHeight;
+
+      renderer.setSize(width, height, false);
+
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Render
+    function animate() {
+      requestAnimationFrame(animate);
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    animate();
+  </script>
 </body>
 </html>
